@@ -18,7 +18,9 @@ def get_filename_from_url(url: str) -> str:
 def download_html(url: str, output_dir: str = OUTPUT_DIR) -> str:
     output_dir = create_path(output_dir)
     response = requests.get(url)
-    response.raise_for_status()
+    if response.status_code != 200 or not response.text.strip():
+        raise RuntimeError(f"Failed to download HTML from {url} (status {response.status_code})")
+
     
     filename = get_filename_from_url(url)
     output_file = os.path.join(output_dir, filename)
@@ -29,6 +31,3 @@ def download_html(url: str, output_dir: str = OUTPUT_DIR) -> str:
     print(f"HTML saved to: {output_file}")
     return output_file
 
-if __name__ == "__main__":
-    url = input("Enter the URL of the page to download: ").strip()
-    download_html(url)
